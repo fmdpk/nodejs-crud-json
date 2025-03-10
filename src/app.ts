@@ -1,6 +1,6 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const itemRoutes = require("./routes/itemRoutes");
+import express from "express";
+import bodyParser from "body-parser";
+import itemRoutes from "./routes/itemRoutes";
 
 const app = express();
 
