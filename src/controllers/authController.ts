@@ -15,27 +15,12 @@ export const signUp = async (req: Request, res: Response) => {
   }
 };
 
-export const signIn = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    res.status(400).json({ error: error.message });
-  } else {
-    res.status(200).json(data);
-  }
-};
-
-export const signInWithOTP = async (req: Request, res: Response) => {
+export const signinWithOTP = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   // Send OTP to the user's email
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
-    options: {},
   });
 
   if (error) {
@@ -46,7 +31,24 @@ export const signInWithOTP = async (req: Request, res: Response) => {
   }
 };
 
-export const verifySignInOTP = async (req: Request, res: Response) => {
+export const signinWithPassword = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  // Send OTP to the user's email
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    res.status(400).json({ error: error.message });
+  } else {
+    res.status(200).json({ message: "OTP sent to your email" });
+    console.log(data);
+  }
+};
+
+export const verifySigninOTP = async (req: Request, res: Response) => {
   const { email, otp } = req.body;
 
   // Verify OTP
@@ -64,16 +66,22 @@ export const verifySignInOTP = async (req: Request, res: Response) => {
   res.status(200).json({ message: "Sign-in successful", user: data });
 };
 
-export const enableMFA = async (req: Request, res: Response): Promise<void> => {
-  const { data, error } = await supabase.auth.mfa.enroll({
-    factorType: "totp",
+export const verifySignupOTP = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+
+  // Verify OTP
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: otp, // Change 'otp' to 'token' if this is the correct parameter
+    type: "signup", // or 'magiclink' or 'recovery' based on your use case
   });
 
   if (error) {
     res.status(400).json({ error: error.message });
-  } else {
-    res.status(200).json(data);
+    return;
   }
+
+  res.status(200).json({ message: "Signup successful", user: data });
 };
 
 export const getUser = async (req: Request, res: Response) => {
@@ -87,8 +95,6 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  // const { userId } = req.body; // Assuming userId is provided in the request body
-
   const { error } = await supabase.auth.signOut();
 
   if (error) {
