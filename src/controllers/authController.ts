@@ -40,7 +40,7 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  const { userId } = req.body; // Assuming userId is provided in the request body
+  // const { userId } = req.body; // Assuming userId is provided in the request body
 
   const { error } = await supabase.auth.signOut();
 
