@@ -7,13 +7,18 @@ export const authenticateUser = async (
   next: NextFunction
 ): Promise<void> => {
   const token = req.headers.authorization?.split(" ")[1];
-
+  const { data, error } = await supabase.auth.getUser(token);
+  console.log(data);
   if (!token) {
     res.status(401).json({ error: "Unauthorized: No token provided" });
     return;
   }
 
-  const { data, error } = await supabase.auth.getUser(token);
+  // // Ensure the user has completed MFA
+  // if (data. !== "aal2") {
+  //   res.status(403).json({ error: "MFA required" });
+  //   return;
+  // }
 
   if (error || !data.user) {
     res.status(401).json({ error: "Unauthorized: Invalid token" });

@@ -15,7 +15,7 @@ export const signUp = async (req: Request, res: Response) => {
       res.status(200).json(data);
     }
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting signup:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -36,7 +36,7 @@ export const signinWithOTP = async (req: Request, res: Response) => {
       console.log(data);
     }
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting Sign-in OTP:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -58,7 +58,7 @@ export const signinWithPassword = async (req: Request, res: Response) => {
       console.log(data);
     }
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting Sign-in:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -81,7 +81,7 @@ export const verifySigninOTP = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Sign-in successful", user: data });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting Sign-in:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -104,7 +104,7 @@ export const verifySignupOTP = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Signup successful", user: data });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting signup:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -160,7 +160,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
     res.status(200).json(data);
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting password update:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -175,7 +175,7 @@ export const getUser = async (req: Request, res: Response) => {
       res.status(200).json(data);
     }
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting user data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -190,7 +190,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
       res.status(200).json({ message: "User signed out successfully" });
     }
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("Error requesting logout:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
