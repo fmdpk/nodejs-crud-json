@@ -10,6 +10,10 @@ import {
   updateUserPassword,
   sendResetPasswordEmail,
   getNewSession,
+  enrollMFA,
+  verifyMFA,
+  unenrollMFA,
+  deleteUser,
 } from "../controllers/authController";
 import { authenticateUser } from "../middlewares/authMiddleware";
 
@@ -37,6 +41,27 @@ const router = Router();
  *         description: a token is send to entered email
  */
 router.post("/signup", signUp);
+
+/**
+ * @swagger
+ * /signup:
+ *   delete:
+ *     tags: [Auth]
+ *     summary: delete user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: user deleted successfully
+ */
+router.delete("/delete-user", deleteUser);
 
 /**
  * @swagger
@@ -209,5 +234,61 @@ router.get("/get-new-session", authenticateUser, getNewSession);
  *         description: user logged out successfully
  */
 router.post("/logout", authenticateUser, logout);
+
+/**
+ * @swagger
+ * /mfa-enroll:
+ *   get:
+ *     tags: [Auth]
+ *     summary: enroll 'totp' MFA for user
+ *     responses:
+ *       200:
+ *         description: MFA enrolled successfully
+ */
+router.get("/enroll-mfa", authenticateUser, enrollMFA);
+
+/**
+ * @swagger
+ * /mfa-unenroll:
+ *   get:
+ *     tags: [Auth]
+ *     summary: unenroll user MFA
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               factorId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: MFA unenrolled successfully
+ */
+router.post("/mfa-unenroll", authenticateUser, unenrollMFA);
+
+/**
+ * @swagger
+ * /verify-mfa:
+ *   post:
+ *     tags: [Auth]
+ *     summary: verify MFA
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               code:
+ *                 type: string
+ *               factorId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: successfully verified MFA
+ */
+router.post("/verify-mfa", verifyMFA);
 
 export default router;

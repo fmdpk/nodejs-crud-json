@@ -20,6 +20,24 @@ export const signUp = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.body;
+    const { data, error } = await supabase.auth.admin.deleteUser(userId);
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res
+        .status(200)
+        .json({ message: "user deleted successfully", data: data });
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
 export const signinWithOTP = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -105,6 +123,83 @@ export const verifySignupOTP = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Signup successful", user: data });
   } catch (error) {
     console.error("Error requesting signup:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
+export const enrollMFA = async (req: Request, res: Response) => {
+  try {
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: "totp",
+    });
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    // Return the QR code URI to display to the user
+    res.json({
+      data: data,
+      qrCode: data.totp.qr_code,
+      secret: data.totp.secret,
+    });
+  } catch (error) {
+    console.error("Error requesting MFA enroll:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
+export const verifyMFA = async (req: Request, res: Response) => {
+  try {
+    const { code, factorId } = req.body;
+
+    const { data, error } = await supabase.auth.mfa.challengeAndVerify({
+      factorId: factorId, // You should store this during enrollment
+      code,
+    });
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    res.json({ data: data, success: true });
+  } catch (error) {
+    console.error("Error requesting MFA verify:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
+export const unenrollMFA = async (req: Request, res: Response) => {
+  try {
+    const { factorId } = req.body;
+
+    const token = req.headers.authorization?.split(" ")[1];
+    const userResponse = await supabase.auth.getUser(token);
+
+    if (userResponse.error) {
+      res.status(400).json({ error: userResponse.error.message });
+      return;
+    }
+
+    console.log(userResponse.data);
+
+    const { data, error } = await supabase.auth.mfa.unenroll({
+      factorId: factorId,
+    });
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    // Return the QR code URI to display to the user
+    res.json({
+      data: data,
+    });
+  } catch (error) {
+    console.error("Error requesting unenroll MFA:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };

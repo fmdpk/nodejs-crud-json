@@ -8,7 +8,7 @@ export const authenticateUser = async (
 ): Promise<void> => {
   const token = req.headers.authorization?.split(" ")[1];
   const { data, error } = await supabase.auth.getUser(token);
-  console.log(data);
+
   if (!token) {
     res.status(401).json({ error: "Unauthorized: No token provided" });
     return;
