@@ -14,6 +14,10 @@ import {
   verifyMFA,
   unenrollMFA,
   deleteUser,
+  createMFAChallenge,
+  verifyMFAChallenge,
+  getAuthenticatorAssuranceLevel,
+  deleteUserFactor,
 } from "../controllers/authController";
 import { authenticateUser } from "../middlewares/authMiddleware";
 
@@ -281,8 +285,6 @@ router.post("/mfa-unenroll", authenticateUser, unenrollMFA);
  *           schema:
  *             type: object
  *             properties:
- *               code:
- *                 type: string
  *               factorId:
  *                 type: string
  *     responses:
@@ -290,5 +292,87 @@ router.post("/mfa-unenroll", authenticateUser, unenrollMFA);
  *         description: successfully verified MFA
  */
 router.post("/verify-mfa", verifyMFA);
+
+/**
+ * @swagger
+ * /create-mfa-challenge:
+ *   post:
+ *     tags: [Auth]
+ *     summary: create MFA challenge
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               factorId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: successfully created MFA challenge
+ */
+router.post("/create-mfa-challenge", createMFAChallenge);
+
+/**
+ * @swagger
+ * /get-authenticator-assurance-level:
+ *   post:
+ *     tags: [Auth]
+ *     summary: get authenticator assurance level
+ *     responses:
+ *       200:
+ *         description: successfully got assurance level
+ */
+router.get(
+  "/get-authenticator-assurance-level",
+  getAuthenticatorAssuranceLevel
+);
+
+/**
+ * @swagger
+ * /verify-mfa-challenge:
+ *   post:
+ *     tags: [Auth]
+ *     summary: verify MFA challenge
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               factorId:
+ *                 type: string
+ *               challengeId:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: successfully verified MFA challenge
+ */
+router.post("/verify-mfa-challenge", verifyMFAChallenge);
+
+/**
+ * @swagger
+ * /delete-user-factor:
+ *   post:
+ *     tags: [Auth]
+ *     summary: delete user factor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               factorId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: successfully deleted user factor
+ */
+router.delete("/delete-user-factor", deleteUserFactor);
 
 export default router;

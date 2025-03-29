@@ -72,6 +72,10 @@ export const signinWithPassword = async (req: Request, res: Response) => {
     if (error) {
       res.status(400).json({ error: error.message });
     } else {
+      if (data.user.factors !== undefined) {
+        res.status(200).json({ data: data, message: "MFA is Activated" });
+        return;
+      }
       res.status(200).json({ data: data, message: "Sign-in successful" });
       console.log(data);
     }
@@ -171,6 +175,70 @@ export const verifyMFA = async (req: Request, res: Response) => {
   }
 };
 
+export const createMFAChallenge = async (req: Request, res: Response) => {
+  try {
+    const { factorId } = req.body;
+
+    const { data, error } = await supabase.auth.mfa.challenge({
+      factorId: factorId,
+    });
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    res.status(200).json({ data: data });
+  } catch (error) {
+    console.error("Error requesting MFA verify:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
+export const getAuthenticatorAssuranceLevel = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { factorId } = req.body;
+
+    const { data, error } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    res.status(200).json({ data: data });
+  } catch (error) {
+    console.error("Error requesting MFA verify:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
+export const verifyMFAChallenge = async (req: Request, res: Response) => {
+  try {
+    const { code, factorId, challengeId } = req.body;
+
+    const { data, error } = await supabase.auth.mfa.verify({
+      challengeId: challengeId,
+      factorId: factorId,
+      code: code,
+    });
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    res.status(200).json({ data: data });
+  } catch (error) {
+    console.error("Error requesting MFA verify:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
 export const unenrollMFA = async (req: Request, res: Response) => {
   try {
     const { factorId } = req.body;
@@ -195,7 +263,32 @@ export const unenrollMFA = async (req: Request, res: Response) => {
     }
 
     // Return the QR code URI to display to the user
-    res.json({
+    res.status(200).json({
+      data: data,
+    });
+  } catch (error) {
+    console.error("Error requesting unenroll MFA:", error);
+    res.status(500).json({ errorMessage: "Internal server error" });
+  }
+};
+
+export const deleteUserFactor = async (req: Request, res: Response) => {
+  try {
+    const { factorId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+    const userResponse = await supabase.auth.getUser(token);
+    const { data, error } = await supabase.auth.admin.mfa.deleteFactor({
+      id: factorId,
+      userId: userResponse.data.user?.id!,
+    });
+
+    if (error) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    // Return the QR code URI to display to the user
+    res.status(200).json({
       data: data,
     });
   } catch (error) {
