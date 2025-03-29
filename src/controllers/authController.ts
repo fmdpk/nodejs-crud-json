@@ -54,7 +54,7 @@ export const signinWithPassword = async (req: Request, res: Response) => {
     if (error) {
       res.status(400).json({ error: error.message });
     } else {
-      res.status(200).json({ message: "OTP sent to your email" });
+      res.status(200).json({ data: data, message: "Sign-in successful" });
       console.log(data);
     }
   } catch (error) {
@@ -141,7 +141,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
   const { password, rePassword } = req.body;
   console.log(password, rePassword);
 
-  if (!password || rePassword) {
+  if (!password || !rePassword) {
     res.status(400).json({ error: "New password is required" });
     return;
   } else if (password !== rePassword) {
@@ -161,6 +161,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
     if (error) {
       res.status(400).json({ error: error.message });
+      console.log(error);
       return;
     }
 
