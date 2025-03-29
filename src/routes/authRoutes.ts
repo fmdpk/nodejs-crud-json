@@ -9,6 +9,7 @@ import {
   signinWithPassword,
   updateUserPassword,
   sendResetPasswordEmail,
+  getNewSession,
 } from "../controllers/authController";
 import { authenticateUser } from "../middlewares/authMiddleware";
 
@@ -184,6 +185,18 @@ router.post("/verify-signup-otp", verifySignupOTP);
  *         description: user not found
  */
 router.get("/user", authenticateUser, getUser);
+
+/**
+ * @swagger
+ * /get-new-session:
+ *   get:
+ *     tags: [Auth]
+ *     summary: get new session for logged in user
+ *     responses:
+ *       200:
+ *         description: new session successfully retrieved
+ */
+router.get("/get-new-session", authenticateUser, getNewSession);
 
 /**
  * @swagger

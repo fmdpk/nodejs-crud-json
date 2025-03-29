@@ -139,12 +139,18 @@ export const sendResetPasswordEmail = async (req: Request, res: Response) => {
 
 export const updateUserPassword = async (req: Request, res: Response) => {
   const { password, rePassword } = req.body;
+  console.log(password, rePassword);
 
   if (!password || rePassword) {
     res.status(400).json({ error: "New password is required" });
     return;
   } else if (password !== rePassword) {
     res.status(400).json({ error: "password and rePassword are not same" });
+    return;
+  } else if (!password || password.length < 6) {
+    res.status(400).json({
+      error: "Password must be at least 6 characters long",
+    });
     return;
   }
 
@@ -168,6 +174,25 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabase.auth.getUser();
+
+    if (error) {
+      res.status(401).json({ error: error.message });
+    } else {
+      res.status(200).json(data);
+    }
+  } catch (error) {
+    console.error("Error requesting user data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getNewSession = async (req: Request, res: Response) => {
+  const { refresh_token } = req.body;
+
+  try {
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refresh_token,
+    });
 
     if (error) {
       res.status(401).json({ error: error.message });
