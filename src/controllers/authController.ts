@@ -4,6 +4,11 @@ import { supabase } from "../supabaseClient";
 export const signUp = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ error: "please provide email and password" });
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -23,6 +28,11 @@ export const signUp = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body;
+
+    if (!userId) {
+      res.status(400).json({ error: "please provide userId" });
+    }
+
     const { data, error } = await supabase.auth.admin.deleteUser(userId);
 
     if (error) {
@@ -41,6 +51,10 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const signinWithOTP = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ error: "please provide email" });
+    }
 
     // Send OTP to the user's email
     const { data, error } = await supabase.auth.signInWithOtp({
@@ -62,6 +76,10 @@ export const signinWithOTP = async (req: Request, res: Response) => {
 export const signinWithPassword = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ error: "please provide email and password" });
+    }
 
     // Send OTP to the user's email
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -89,6 +107,10 @@ export const verifySigninOTP = async (req: Request, res: Response) => {
   try {
     const { email, otp } = req.body;
 
+    if (!email || !otp) {
+      res.status(400).json({ error: "please provide email and otp" });
+    }
+
     // Verify OTP
     const { data, error } = await supabase.auth.verifyOtp({
       email,
@@ -111,6 +133,10 @@ export const verifySigninOTP = async (req: Request, res: Response) => {
 export const verifySignupOTP = async (req: Request, res: Response) => {
   try {
     const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      res.status(400).json({ error: "please provide email and otp" });
+    }
 
     // Verify OTP
     const { data, error } = await supabase.auth.verifyOtp({
@@ -158,6 +184,10 @@ export const verifyMFA = async (req: Request, res: Response) => {
   try {
     const { code, factorId } = req.body;
 
+    if (!code || !factorId) {
+      res.status(400).json({ error: "please provide code and factorId" });
+    }
+
     const { data, error } = await supabase.auth.mfa.challengeAndVerify({
       factorId: factorId, // You should store this during enrollment
       code,
@@ -178,6 +208,10 @@ export const verifyMFA = async (req: Request, res: Response) => {
 export const createMFAChallenge = async (req: Request, res: Response) => {
   try {
     const { factorId } = req.body;
+
+    if (!factorId) {
+      res.status(400).json({ error: "please provide factorId" });
+    }
 
     const { data, error } = await supabase.auth.mfa.challenge({
       factorId: factorId,
@@ -200,8 +234,6 @@ export const getAuthenticatorAssuranceLevel = async (
   res: Response
 ) => {
   try {
-    const { factorId } = req.body;
-
     const { data, error } =
       await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
@@ -220,6 +252,12 @@ export const getAuthenticatorAssuranceLevel = async (
 export const verifyMFAChallenge = async (req: Request, res: Response) => {
   try {
     const { code, factorId, challengeId } = req.body;
+
+    if (!code || !factorId || !challengeId) {
+      res
+        .status(400)
+        .json({ error: "please provide code and factorId and challengeId" });
+    }
 
     const { data, error } = await supabase.auth.mfa.verify({
       challengeId: challengeId,
@@ -243,6 +281,10 @@ export const unenrollMFA = async (req: Request, res: Response) => {
   try {
     const { factorId } = req.body;
 
+    if (!factorId) {
+      res.status(400).json({ error: "please provide factorId" });
+    }
+
     const token = req.headers.authorization?.split(" ")[1];
     const userResponse = await supabase.auth.getUser(token);
 
@@ -250,8 +292,6 @@ export const unenrollMFA = async (req: Request, res: Response) => {
       res.status(400).json({ error: userResponse.error.message });
       return;
     }
-
-    console.log(userResponse.data);
 
     const { data, error } = await supabase.auth.mfa.unenroll({
       factorId: factorId,
@@ -275,6 +315,11 @@ export const unenrollMFA = async (req: Request, res: Response) => {
 export const deleteUserFactor = async (req: Request, res: Response) => {
   try {
     const { factorId } = req.body;
+
+    if (!factorId) {
+      res.status(400).json({ error: "please provide factorId" });
+    }
+
     const token = req.headers.authorization?.split(" ")[1];
     const userResponse = await supabase.auth.getUser(token);
     const { data, error } = await supabase.auth.admin.mfa.deleteFactor({
@@ -301,7 +346,7 @@ export const sendResetPasswordEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
-    res.status(400).json({ error: "Email is required" });
+    res.status(400).json({ error: "please provide email" });
     return;
   }
 
@@ -327,10 +372,9 @@ export const sendResetPasswordEmail = async (req: Request, res: Response) => {
 
 export const updateUserPassword = async (req: Request, res: Response) => {
   const { password, rePassword } = req.body;
-  console.log(password, rePassword);
 
   if (!password || !rePassword) {
-    res.status(400).json({ error: "New password is required" });
+    res.status(400).json({ error: "please provide password and rePassword" });
     return;
   } else if (password !== rePassword) {
     res.status(400).json({ error: "password and rePassword are not same" });
@@ -377,6 +421,11 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const getNewSession = async (req: Request, res: Response) => {
   const { refresh_token } = req.body;
+
+  if (!refresh_token) {
+    res.status(400).json({ error: "please provide refresh token" });
+    return;
+  }
 
   try {
     const { data, error } = await supabase.auth.refreshSession({
