@@ -1,10 +1,55 @@
-// enter below query in SQL Editor of supabase to create a Todo table in public
+create table tasks (
+  id uuid default uuid_generate_v4() primary key,
+  task text not null,
+  creator uuid references auth.users not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  modified_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  modifiers uuid[] default array[]::uuid[]
+);
+
+-- Enable RLS for tasks table
+alter table tasks enable row level security;
+
+-- Create policies for tasks table
+create policy "Users can access tasks they created" on tasks
+  for all
+  using (auth.uid() = creator);
+
+create policy "Users can access tasks they modified" on tasks
+  for all
+  using (auth.uid() = any(modifiers));
+
+
+---------------------------------------------------------------------------------------------------
+
+--create table todos (
+--  id uuid default uuid_generate_v4 () primary key,
+  -- user_id uuid references auth.users,
+  -- task text not null,
+  -- is_complete boolean default false,
+  -- created_at timestamp with time zone default timezone ('utc'::text, now())
+-- );
+
+-- Enable Row Level Security (RLS)
+-- alter table todos enable row level security;
+
+-- Create policy to allow users to only access their own todos
+-- create policy "Users can only access their own todos" on todos for all using (auth.uid () = user_id);
+
+alter table todos disable row level security;
+
+-- Drop the existing todos table
+drop table if exists todos cascade;
 
 create table todos (
   id uuid default uuid_generate_v4() primary key,
-  user_id uuid references auth.users,
+  user_id uuid references auth.users not null,
+  task_id uuid references tasks,  -- Assuming you have a tasks table
   task text not null,
-  is_complete boolean default false,
+  priority smallint check (priority between 1 and 3),
+  state smallint check (state between 1 and 4),
+  assignee uuid references auth.users,
+  task_date timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
@@ -15,3 +60,8 @@ alter table todos enable row level security;
 create policy "Users can only access their own todos" on todos
   for all
   using (auth.uid() = user_id);
+
+-- Optional: Create policy to allow assignees to access todos assigned to them
+create policy "Users can access todos assigned to them" on todos
+  for all
+  using (auth.uid() = assignee);

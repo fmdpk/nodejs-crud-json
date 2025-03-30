@@ -20,7 +20,6 @@ export const signUp = async (req: Request, res: Response) => {
       res.status(200).json(data);
     }
   } catch (error) {
-    console.error("Error requesting signup:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -43,7 +42,6 @@ export const deleteUser = async (req: Request, res: Response) => {
         .json({ message: "user deleted successfully", data: data });
     }
   } catch (error) {
-    console.error("Error deleting user:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -65,10 +63,8 @@ export const signinWithOTP = async (req: Request, res: Response) => {
       res.status(400).json({ error: error.message });
     } else {
       res.status(200).json({ message: "OTP sent to your email" });
-      console.log(data);
     }
   } catch (error) {
-    console.error("Error requesting Sign-in OTP:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -95,10 +91,8 @@ export const signinWithPassword = async (req: Request, res: Response) => {
         return;
       }
       res.status(200).json({ data: data, message: "Sign-in successful" });
-      console.log(data);
     }
   } catch (error) {
-    console.error("Error requesting Sign-in:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -125,7 +119,6 @@ export const verifySigninOTP = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Sign-in successful", user: data });
   } catch (error) {
-    console.error("Error requesting Sign-in:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -152,7 +145,6 @@ export const verifySignupOTP = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Signup successful", user: data });
   } catch (error) {
-    console.error("Error requesting signup:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -175,7 +167,6 @@ export const enrollMFA = async (req: Request, res: Response) => {
       secret: data.totp.secret,
     });
   } catch (error) {
-    console.error("Error requesting MFA enroll:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -200,7 +191,6 @@ export const verifyMFA = async (req: Request, res: Response) => {
 
     res.json({ data: data, success: true });
   } catch (error) {
-    console.error("Error requesting MFA verify:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -224,7 +214,6 @@ export const createMFAChallenge = async (req: Request, res: Response) => {
 
     res.status(200).json({ data: data });
   } catch (error) {
-    console.error("Error requesting MFA verify:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -243,8 +232,7 @@ export const getAuthenticatorAssuranceLevel = async (
     }
 
     res.status(200).json({ data: data });
-  } catch (error) {
-    console.error("Error requesting MFA verify:", error);
+  } catch (error) {    
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -272,7 +260,6 @@ export const verifyMFAChallenge = async (req: Request, res: Response) => {
 
     res.status(200).json({ data: data });
   } catch (error) {
-    console.error("Error requesting MFA verify:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -307,7 +294,6 @@ export const unenrollMFA = async (req: Request, res: Response) => {
       data: data,
     });
   } catch (error) {
-    console.error("Error requesting unenroll MFA:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -337,7 +323,6 @@ export const deleteUserFactor = async (req: Request, res: Response) => {
       data: data,
     });
   } catch (error) {
-    console.error("Error requesting unenroll MFA:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -365,7 +350,6 @@ export const sendResetPasswordEmail = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Password reset email sent", responseData: data });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
     res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
@@ -393,13 +377,11 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
     if (error) {
       res.status(400).json({ error: error.message });
-      console.log(error);
       return;
     }
 
     res.status(200).json(data);
   } catch (error) {
-    console.error("Error requesting password update:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -414,7 +396,6 @@ export const getUser = async (req: Request, res: Response) => {
       res.status(200).json(data);
     }
   } catch (error) {
-    console.error("Error requesting user data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -438,7 +419,6 @@ export const getNewSession = async (req: Request, res: Response) => {
       res.status(200).json(data);
     }
   } catch (error) {
-    console.error("Error requesting user data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -453,7 +433,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
       res.status(200).json({ message: "User signed out successfully" });
     }
   } catch (error) {
-    console.error("Error requesting logout:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

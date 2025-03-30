@@ -26,6 +26,10 @@ const options = {
         description: "Operations related to todo crud.Datastore is supabase",
       },
       {
+        name: "Tasks",
+        description: "Operations related to task crud.Datastore is supabase",
+      },
+      {
         name: "Items",
         description: "Operations related to item crud.Datastore is a json file",
       },

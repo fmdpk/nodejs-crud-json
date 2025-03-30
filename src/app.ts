@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import itemRoutes from "./routes/itemRoutes";
 import todoRoutes from "./routes/todoRoutes";
 import authRoutes from "./routes/authRoutes";
+import taskRoutes from "./routes/taskRoutes";
 
 const app = express();
 const { swaggerUi, specs } = require("./swagger");
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api", itemRoutes);
 app.use("/api", todoRoutes);
+app.use("/api", taskRoutes);
 app.use("/auth", authRoutes);
 
 const PORT = process.env.PORT || 3000;
