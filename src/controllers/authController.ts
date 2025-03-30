@@ -409,7 +409,7 @@ export const getUser = async (req: Request, res: Response) => {
     const { data, error } = await supabase.auth.getUser();
 
     if (error) {
-      res.status(401).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     } else {
       res.status(200).json(data);
     }
@@ -433,7 +433,7 @@ export const getNewSession = async (req: Request, res: Response) => {
     });
 
     if (error) {
-      res.status(401).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     } else {
       res.status(200).json(data);
     }

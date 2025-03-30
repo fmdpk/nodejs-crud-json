@@ -14,12 +14,6 @@ export const authenticateUser = async (
     return;
   }
 
-  // // Ensure the user has completed MFA
-  // if (data. !== "aal2") {
-  //   res.status(403).json({ error: "MFA required" });
-  //   return;
-  // }
-
   if (error || !data.user) {
     res.status(401).json({ error: "Unauthorized: Invalid token" });
     return;
