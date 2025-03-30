@@ -131,7 +131,6 @@ export const getTodo = async (req: Request, res: Response) => {
 
 export const updateTodo = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
     const token = req.headers.authorization?.split(" ")[1];
     const userResponse = await supabase.auth.getUser(token);
     if (userResponse.error) {
@@ -156,16 +155,27 @@ export const updateTodo = async (req: Request, res: Response) => {
 };
 
 export const deleteTodo = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { error } = await supabase
-    .from("todos")
-    .delete()
-    .eq("id", req.params.id)
-    .eq("user_id", req.user.id);
+  try {
+    const { id } = req.params;
+    const token = req.headers.authorization?.split(" ")[1];
+    const userResponse = await supabase.auth.getUser(token);
+    if (userResponse.error) {
+      res.status(400).json({ error: userResponse.error.message });
+      return;
+    }
+    const user_id = userResponse.data.user?.id;
+    const { error } = await supabase
+      .from("todos")
+      .delete()
+      .eq("id", req.params.id)
+      .eq("user_id", user_id);
 
-  if (error) {
-    res.status(400).json({ error: error.message });
-  } else {
-    res.status(200).json({ message: "Todo deleted successfully" });
+    if (error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(200).json({ message: "Todo deleted successfully" });
+    }
+  } catch (error) {
+    res.status(500).json({ errorMessage: "Internal server error" });
   }
 };
